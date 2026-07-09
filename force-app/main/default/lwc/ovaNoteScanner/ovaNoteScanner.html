@@ -1,0 +1,78 @@
+<template>
+    <lightning-card title="Handwritten Note Scanner" icon-name="standard:note">
+        <div class="slds-p-around_medium">
+            <template lwc:if={showUploader}>
+                <p class="slds-m-bottom_small">
+                    Upload a photo of your handwritten note. Einstein will transcribe it
+                    and log it as an In-Person Meeting activity on this Case.
+                </p>
+                <lightning-file-upload
+                    label="Upload handwritten note"
+                    name="noteFileUploader"
+                    accept={acceptedFormats}
+                    record-id={recordId}
+                    onuploadfinished={handleUploadFinished}>
+                </lightning-file-upload>
+            </template>
+
+            <template lwc:if={uploadedFileName}>
+                <div class="slds-m-top_medium slds-box slds-theme_shade">
+                    <p><strong>Uploaded:</strong> {uploadedFileName}</p>
+                    <div class="slds-m-top_small">
+                        <lightning-button
+                            label="Transcribe with Einstein"
+                            variant="brand"
+                            icon-name="utility:einstein"
+                            onclick={handleTranscribe}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                        <lightning-button
+                            label="Clear"
+                            variant="neutral"
+                            class="slds-m-left_x-small"
+                            onclick={handleClear}
+                            disabled={isProcessing}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <template lwc:if={isProcessing}>
+                <div class="slds-m-top_medium">
+                    <lightning-spinner alternative-text="Transcribing..." size="small"></lightning-spinner>
+                    <p class="slds-text-align_center slds-m-top_small">{statusMessage}</p>
+                </div>
+            </template>
+
+            <template lwc:if={transcription}>
+                <div class="slds-m-top_medium slds-box">
+                    <p class="slds-text-heading_small slds-m-bottom_small">
+                        Transcription (review before filing):
+                    </p>
+                    <lightning-textarea
+                        label="Transcription"
+                        variant="label-hidden"
+                        value={transcription}
+                        onchange={handleEdit}
+                        class="slds-m-bottom_small">
+                    </lightning-textarea>
+                    <lightning-button
+                        label="Log as In-Person Meeting"
+                        variant="success"
+                        icon-name="utility:event"
+                        onclick={handleFileComment}
+                        disabled={isProcessing}>
+                    </lightning-button>
+                </div>
+            </template>
+
+            <template lwc:if={statusMessage}>
+                <template lwc:if={isTerminalMessage}>
+                    <div class={statusClass}>
+                        <p>{statusMessage}</p>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>
